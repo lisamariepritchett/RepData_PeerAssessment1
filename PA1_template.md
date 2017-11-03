@@ -50,6 +50,7 @@ by5min <<- activity %>%
     mutate(date = date(datetime)) %>% 
     mutate(time = as.POSIXct(format(datetime, '%H %M'),format='%H %M')) %>% 
     select(datetime,date,time,weekday,dayofweek,steps)
+
 byday <<- by5min %>% group_by(date) %>% 
     summarise(total.steps=sum(steps,na.rm=TRUE)) %>% 
     mutate(dayofweek=factor(weekdays(date),weekdays_order))   %>% 
@@ -62,8 +63,11 @@ bytime <<- by5min %>% group_by(time) %>%
 
 ## What is mean total number of steps taken per day?
 
-####- The **mean** number of steps per day is 9354 
-####- The **median** number of steps is 10395
+
+#### - The mean number of steps per day is 9354 
+
+#### - The median number of steps is 10395
+
 
 The  histogram for number of steps per day is shown below. 
 
@@ -105,7 +109,7 @@ by5min %>% group_by(time,dayofweek) %>%
 
 ![](PA1_template_files/figure-html/weekday_pattern-1.png)<!-- -->
 
-The activity pattern does differ by day of the week. We see more active early mornings on Monday, Tuesday, and Wednesday. Friday Saturday, and Sunday show activity more evenly distributed throughtout the middle of the day. 
+The activity pattern does differ by day of the week. We see more active early mornings on Monday, Tuesday, and Wednesday. In contrast, Friday Saturday, and Sunday more activity distributed throughtout the middle of the day. 
 
 ## Imputing missing values
 
@@ -118,7 +122,7 @@ The data consisits of 17568 records. Of those,
 
 ### Describe technique for replacing missing values
 
-Because the activity pattern depends on both the time of day and day of the week, I used both of those factors for imputing missing values. Missing values are replaced with the avearge for the time of day and day of week of the missing item.
+Because the activity pattern depends on both the time of day and day of the week, I used both of those factors for imputing missing values. Missing values are replaced with the avearge from the time of day on the day of week.
 
 ### Examine effects of replacing missing values
 
