@@ -8,15 +8,17 @@ Load libraries and data.
 ```r
 library(dplyr)
 library(ggplot2)
-library(lubridate)
-library(knitr)
-library(scales)
 library(reshape2)
+library(knitr)
+library(kableExtra)
+library(lubridate)
+library(scales)
 
-url='https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
+
+data_url <- 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
 temp <- tempfile()
-download.file(url,temp)
-activity <<- read.csv(unz(temp, "activity.csv"))
+download.file(data_url,temp)
+activity <- read.csv(unz(temp, "activity.csv"))
 ```
 
 Define what days are in "weekend" and the order of the weekdays.
@@ -79,7 +81,7 @@ ggplot(byday, aes(x=total.steps)) +
 
 ![](PA1_template_files/figure-html/hist_mean-1.png)<!-- -->
 
-Steps per day is distributed around about 10,000 steps per day. There are a couple of days with near 20,000 steps or more. We also see 10 days with near 0 steps. Some of these are missing values and are pulling the mean down away from the median.
+Steps per day is distributed around about 10,000 steps per day. There are a couple of days with near 20,000 steps or more. We also see 10 days with near 0 steps. Some of these are because there were missing values in the data for steps in 5 minute intervals, and when missing values were ignored in summations it led to several days with zero steps. These days are pulling the observed mean and median down away from the true distribution of steps per day.
 
 
 ## What is the average daily activity patatern?
@@ -151,7 +153,7 @@ byday <<- by5min %>% group_by(date, na_method) %>%
     mutate(dayofweek=factor(weekdays(date),weekdays_order))   %>% 
     mutate(weekday = ifelse(dayofweek  %in% weekend, 'Weekend','Weekday'))  
 bytime <<- by5min %>% group_by(time, na_method) %>% 
-    summarise(mean.steps=mean(steps,na.rm = TRUE))
+    summarise(mean.steps=mean(steps,na.rm=TRUE))
 ```
 
 The histograms below show the distribution of steps per day before and after imputing the missing values. 
@@ -164,13 +166,14 @@ ggplot(byday, aes(x=total.steps, fill=na_method)) +
     scale_fill_manual(values=c('navy','firebrick1')) +
     theme(legend.position = 'top') +
     guides(fill=FALSE) +
-    scale_y_continuous(limits=c(0,15))
+    scale_y_continuous(limits=c(0,12.5))
 ```
 
 ![](PA1_template_files/figure-html/histogram_missing-1.png)<!-- -->
 
 
 We see the number of days with step counts near 0 have decreased from 10 to 2. In addition, imputing the missing values has slightly increased the number of days with near average step-counts.
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -193,4 +196,6 @@ by5min %>% group_by(weekday,time,na_method) %>%
 
 Again we see that the daily activity pattern differs depending on the day of the week. The weekdays show activity earlier in the morning comared to the weekdays. In contrast, weekends show more activity in the afternoons. 
 
-In addition, these plots show that imputing the means did not effect the pattern of daily activity very much. One has to look very closely to see any departure between the two lines showing the daily patterns with and without missing values imputed. 
+In addition, these plots show that imputing the means did not affect the pattern of daily activity very much. One has to look very closely to see any departure between the two lines showing the daily patterns with and without missing values imputed. 
+
+
